@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/Abdulqudri/myapi/configs"
 	"github.com/Abdulqudri/myapi/database"
 	"github.com/Abdulqudri/myapi/routers"
@@ -11,10 +14,14 @@ func main() {
 
 	configs.LoadEnv()
 	database.ConnectDatabase()
-	r := gin.Default() 
+	r := gin.Default()
 
 	routers.RegisterRoutes(r)
 
 	// Start server
-	r.Run(":8080") // listen on localhost:8080
+	log.Println("Running in env:", os.Getenv("GIN_ENV"))
+
+	port := configs.GetPort()
+	
+	r.Run(":" + port)
 }

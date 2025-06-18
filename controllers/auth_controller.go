@@ -63,7 +63,7 @@ func Login(c *gin.Context) {
 	user.RefreshToken = refreshToken
 	database.DB.Save(&user)
 
-	c.SetCookie("refresh_token", refreshToken, 7*24*60*60, "/", "", false, true)
+	utils.SetSecureCookie(c.Writer, "refresh_token", refreshToken, 7*24*60*60)
 
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "token": accessToken})
@@ -118,8 +118,8 @@ func Logout(c *gin.Context) {
 
 	user.RefreshToken = ""
 	database.DB.Save(&user)
-
-	c.SetCookie("refresh_token", "", -1, "/", "", false, true)
+	 
+	utils.DeleteCookie(c.Writer, "refresh_token")
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }
 func GetMe(c *gin.Context) {

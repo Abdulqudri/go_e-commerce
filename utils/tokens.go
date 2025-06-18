@@ -1,15 +1,13 @@
 package utils
 
 import (
-	"log"
 	"time"
 
 	"github.com/Abdulqudri/myapi/configs"
 	"github.com/golang-jwt/jwt/v5"
 )
-
-var jwtKey = configs.GetTokenSecret()
-
+//this is what is causing the error can you explain why?
+//var jwtKey = configs.GetTokenSecret()
 
 func GenerateAccessToken(userID uint) (string, error) {
 	claims := jwt.MapClaims{
@@ -19,8 +17,9 @@ func GenerateAccessToken(userID uint) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-return token.SignedString([]byte(jwtKey))
-	
+	jwtKey := configs.GetTokenSecret()
+
+	return token.SignedString([]byte(jwtKey))
 
 }
 func GenerateRefreshToken(userID uint) (string, error) {
@@ -31,10 +30,14 @@ func GenerateRefreshToken(userID uint) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
+	jwtKey := configs.GetTokenSecret()
+
 	return token.SignedString([]byte(jwtKey))
 }
 
 func ValidateToken(tokenString string) (jwt.MapClaims, error) {
+
+	jwtKey := configs.GetTokenSecret()
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, jwt.ErrSignatureInvalid
@@ -48,7 +51,7 @@ func ValidateToken(tokenString string) (jwt.MapClaims, error) {
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil
-	}else {
+	} else {
 		return nil, err
 	}
 }
