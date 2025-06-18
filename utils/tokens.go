@@ -11,12 +11,22 @@ import (
 var jwtKey = configs.GetTokenSecret()
 
 
-
-func GenerateToken(userID uint) (string, error) {
-	log.Println("Using JWT secret key:", jwtKey)
+func GenerateAccessToken(userID uint) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID,
-		"exp":     time.Now().Add(24 * time.Hour).Unix(), // Token valid for 24 hours
+		"exp":     time.Now().Add(15 * time.Minute).Unix(), // Token valid for 24 hours
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+return token.SignedString([]byte(jwtKey))
+	
+
+}
+func GenerateRefreshToken(userID uint) (string, error) {
+	claims := jwt.MapClaims{
+		"user_id": userID,
+		"exp":     time.Now().Add(7 * 24 * time.Hour).Unix(), // Token valid for 24 hours
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

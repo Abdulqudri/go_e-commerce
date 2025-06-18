@@ -57,13 +57,70 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateToken(user.ID)
+	accessToken, _ := utils.GenerateAccessToken(user.ID)
+	refreshToken, _ := utils.GenerateRefreshToken(user.ID)
+	
+	user.RefreshToken = refreshToken
+	database.DB.Save(&user)
+
+	c.SetCookie("refresh_token", refreshToken, 7*24*60*60, "/", "", false, true)
+
+
+	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "token": accessToken})
+}
+
+func Refresh(c *gin.Context) {
+	refreshToken, err := c.Cookie("refresh_token")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Refresh token not found"})
+		return
+	}
+	claims, err := utils.ValidateToken(refreshToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+		return
+	}
+	userID := uint(claims["user_id"].(float64))	
+
+	var user models.User
+	if err := database.DB.First(&user, userID).Error; err != nil || user.RefreshToken != refreshToken {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "token": token})
+	accessToken, err := utils.GenerateAccessToken(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate access token"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
+}
+
+func Logout(c *gin.Context) {
+	refreshToken, err := c.Cookie("refresh_token")
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Refresh token not found"})
+		return
+	}
+
+	claims, err := utils.ValidateToken(refreshToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+		return
+	}
+
+	userID := uint(claims["user_id"].(float64))
+	var user models.User
+	if err := database.DB.First(&user, userID).Error; err != nil || user.RefreshToken != refreshToken {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session"})
+		return
+	}
+
+	user.RefreshToken = ""
+	database.DB.Save(&user)
+
+	c.SetCookie("refresh_token", "", -1, "/", "", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }
 func GetMe(c *gin.Context) {
 	user, exists := c.Get("user")
