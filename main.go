@@ -13,7 +13,7 @@ func main() {
 	database.ConnectDatabase()
 	r := gin.Default() 
 
-	routers.RegisterUserRoutes(r)
+	routers.RegisterRoutes(r)
 
 	// Start server
 	r.Run(":8080") // listen on localhost:8080

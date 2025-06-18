@@ -21,3 +21,10 @@ func GetDSN() string {
 		os.Getenv("DB_PORT") + ")/" +
 		os.Getenv("DB_NAME") + "?charset=utf8mb4&parseTime=True&loc=Local"
 }
+func GetTokenSecret() string {
+	secret := os.Getenv("TOKEN_SECRET")	
+	// if secret == "" {	
+	// 	log.Fatal("TOKEN_SECRET is not set in the environment variables.")
+	// }	
+	return secret
+}
