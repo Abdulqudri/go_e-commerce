@@ -6,5 +6,5 @@ type User struct {
 	Email string `json:"email" gorm:"unique"`
 	Password string `json:"-"`
 
-	RefreshToken string `gorm:"size:512"`
+	RefreshToken string `json:"-" gorm:"size:512"`
 }

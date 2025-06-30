@@ -5,9 +5,6 @@ import (
 	"github.com/Abdulqudri/myapi/models"
 )
 
-func CreateUser(user *models.User) error {
-	return database.DB.Create(user).Error
-}
 
 func GetUser(id uint) (*models.User, error) {
 	var user models.User

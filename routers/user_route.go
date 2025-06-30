@@ -19,7 +19,6 @@ func RegisterRoutes(r *gin.Engine) {
 
 	user := r.Group("/users")
 	{
-		user.POST("/", middlewares.RequiredAuth, controllers.CreateUser)
 		user.GET("/", middlewares.RequiredAuth, controllers.GetUsers)
 		user.GET("/:id", middlewares.RequiredAuth, controllers.GetUser)
 		user.PUT("/:id", middlewares.RequiredAuth, controllers.UpdateUser)
