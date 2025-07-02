@@ -17,6 +17,7 @@ func main() {
 	r := gin.Default()
 
 	routers.RegisterRoutes(r)
+	routers.RegisterPoductRoutes(r)
 
 	// Start server
 	log.Println("Running in env:", os.Getenv("GIN_ENV"))
