@@ -53,3 +53,41 @@ func LoginUser(input dtos.LoginDTO) (string, string, error) {
 	return refreshToken, accessToken, nil
 
 }
+
+func Refresh(refreshToken string) (string, error) {
+	claims, err := utils.ValidateToken(refreshToken)
+	if err != nil {
+		return "", errors.New(" Invalid refresh token")
+	}
+	userID := uint(claims["user_id"].(float64))
+
+	var user models.User
+	if err := database.DB.First(&user, userID).Error; err != nil || user.RefreshToken != refreshToken {
+		return "", errors.New(" Invalid session")
+	}
+
+	accessToken, err := utils.GenerateAccessToken(user.ID)
+	if err != nil {
+		return "", errors.New(" Failed to generate access token")
+	}
+
+	return accessToken, nil
+}
+
+func Logout(refreshToken string) error{
+	claims, err := utils.ValidateToken(refreshToken)
+	if err != nil {
+		return errors.New(" Invalid refresh token")
+	}
+
+	userID := uint(claims["user_id"].(float64))
+	var user models.User
+	if err := database.DB.First(&user, userID).Error; err != nil || user.RefreshToken != refreshToken {
+		return errors.New(" Invalid session") 
+	}
+
+	user.RefreshToken = ""
+	database.DB.Save(&user)
+
+	return nil
+}

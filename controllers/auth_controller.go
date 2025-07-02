@@ -3,9 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/Abdulqudri/myapi/database"
 	"github.com/Abdulqudri/myapi/dtos"
-	"github.com/Abdulqudri/myapi/models"
 	"github.com/Abdulqudri/myapi/services"
 	"github.com/Abdulqudri/myapi/utils"
 	"github.com/gin-gonic/gin"
@@ -18,7 +16,7 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	user, err := services.RegisterUser(input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
@@ -54,23 +52,9 @@ func Refresh(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Refresh token not found"})
 		return
 	}
-	claims, err := utils.ValidateToken(refreshToken)
+	accessToken, err := services.Refresh(refreshToken)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
-		return
-	}
-	userID := uint(claims["user_id"].(float64))	
-
-	var user models.User
-	if err := database.DB.First(&user, userID).Error; err != nil || user.RefreshToken != refreshToken {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session"})
-		return
-	}
-
-	accessToken, err := utils.GenerateAccessToken(user.ID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate access token"})
-		return
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
 	c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
 }
@@ -82,22 +66,10 @@ func Logout(c *gin.Context) {
 		return
 	}
 
-	claims, err := utils.ValidateToken(refreshToken)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
-		return
+	if err := services.Logout(refreshToken); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 	}
 
-	userID := uint(claims["user_id"].(float64))
-	var user models.User
-	if err := database.DB.First(&user, userID).Error; err != nil || user.RefreshToken != refreshToken {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid session"})
-		return
-	}
-
-	user.RefreshToken = ""
-	database.DB.Save(&user)
-	 
 	utils.DeleteCookie(c.Writer, "refresh_token")
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }
