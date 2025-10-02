@@ -6,13 +6,13 @@ import (
 	"github.com/Abdulqudri/myapi/configs"
 	"github.com/golang-jwt/jwt/v5"
 )
-//this is what is causing the error can you explain why?
+
 //var jwtKey = configs.GetTokenSecret()
 
 func GenerateAccessToken(userID uint) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": userID,
-		"exp":     time.Now().Add(15 * time.Minute).Unix(), // Token valid for 24 hours
+		"exp":     time.Now().Add(15 * time.Minute).Unix(),  // Token valid for 15 minutes
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -38,7 +38,7 @@ func GenerateRefreshToken(userID uint) (string, error) {
 func ValidateToken(tokenString string) (jwt.MapClaims, error) {
 
 	jwtKey := configs.GetTokenSecret()
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, jwt.ErrSignatureInvalid
 		}

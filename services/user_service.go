@@ -22,7 +22,7 @@ func GetUsers() ([]models.User, error) {
 }
 
 func UpdateUser(id uint, user *models.User) (*models.User, error) {
-	err := database.DB.Model(&models.User{}).Where("id = ?", id).Updates(map[string]interface{}{
+	err := database.DB.Model(&models.User{}).Where("id = ? ", id).Updates(map[string]interface{}{
 		"name": user.Name,
 	}).Error
 

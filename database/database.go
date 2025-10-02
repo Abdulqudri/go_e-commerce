@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/Abdulqudri/myapi/configs"
-	"github.com/Abdulqudri/myapi/models"
+	// "github.com/Abdulqudri/myapi/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -20,9 +20,9 @@ func ConnectDatabase() {
 	}
 	DB = db
 
-	err = DB.AutoMigrate(&models.User{})
-	if err != nil {
-		log.Fatal("Migration error:", err)
-	}
-	log.Println("Connected to MySQL & migrated User model")
+	// err = DB.AutoMigrate(&models.User{}, &models.Product{})
+	// if err != nil {
+	// 	log.Fatal("Migration error:", err)
+	// }
+	log.Println("Connected to MySQL")
 }

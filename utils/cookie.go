@@ -2,11 +2,12 @@ package utils
 
 import (
 	"net/http"
-	"os"
+
+	"github.com/Abdulqudri/myapi/configs"
 )
 
 func IsProd() bool {
-	return os.Getenv("GIN_ENV") == "production"
+	return configs.GetEnv() == "production"
 }
 
 func SetSecureCookie(w http.ResponseWriter, name, value string, maxAge int) {

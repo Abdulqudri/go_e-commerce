@@ -15,7 +15,7 @@ func LoadEnv() {
 	} else {
 		log.Println("✅ .env loaded.")
 	}
-	
+
 }
 
 func GetDSN() string {
@@ -26,7 +26,7 @@ func GetDSN() string {
 		os.Getenv("DB_NAME") + "?charset=utf8mb4&parseTime=True&loc=Local"
 }
 func GetTokenSecret() string {
-	
+
 	secret := os.Getenv("TOKEN_SECRET")
 	if secret == "" {
 		log.Fatal("TOKEN_SECRET is not set in the environment variables.")
@@ -40,4 +40,13 @@ func GetPort() string {
 		return "8080"
 	}
 	return port
+}
+
+func GetEnv() string {
+	ginEnv := os.Getenv("GIN_ENV")
+	if ginEnv == "" {
+		log.Println("Env is not set, defaulting to development.")
+		return "development"
+	}
+	return ginEnv
 }

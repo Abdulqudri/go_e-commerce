@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"github.com/Abdulqudri/myapi/configs"
 	"github.com/Abdulqudri/myapi/database"
@@ -20,7 +19,7 @@ func main() {
 	routers.RegisterPoductRoutes(r)
 
 	// Start server
-	log.Println("Running in env:", os.Getenv("GIN_ENV"))
+	log.Println("Running in env:", configs.GetEnv())
 
 	port := configs.GetPort()
 	
