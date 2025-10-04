@@ -15,8 +15,7 @@ func main() {
 	database.ConnectDatabase()
 	r := gin.Default()
 
-	routers.RegisterRoutes(r)
-	routers.RegisterPoductRoutes(r)
+	routers.Routers(r)
 
 	// Start server
 	log.Println("Running in env:", configs.GetEnv())
