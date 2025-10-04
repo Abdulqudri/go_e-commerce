@@ -19,7 +19,7 @@ func Register(c *gin.Context) {
 
 	user, err := services.RegisterUser(input)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -37,7 +37,7 @@ func Login(c *gin.Context) {
 
 	refreshToken, accessToken, err := services.LoginUser(input)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -54,7 +54,7 @@ func Refresh(c *gin.Context) {
 	}
 	accessToken, err := services.Refresh(refreshToken)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
 }
@@ -67,7 +67,7 @@ func Logout(c *gin.Context) {
 	}
 
 	if err := services.Logout(refreshToken); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
 	utils.DeleteCookie(c.Writer, "refresh_token")

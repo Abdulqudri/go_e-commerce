@@ -31,11 +31,8 @@ func UpdateProduct(id uint, input dtos.UpdateProductDTO) (*models.Product, error
 
 	err = database.DB.First(&updatedProduct, id).Error
 
-	if err != nil {
-		return nil, err
-	}
 
-	return &updatedProduct, nil
+	return &updatedProduct, err
 }
 
 func GetProducts() ([]models.Product, error){
@@ -43,11 +40,8 @@ func GetProducts() ([]models.Product, error){
 
 	err := database.DB.Find(&products).Error
 
-	if err != nil {
-		return nil, err
-	}
 
-	return products, nil
+	return products, err
 }
 
 func GetProduct(id uint) (*models.Product, error) {

@@ -11,7 +11,6 @@ import (
 
 var DB *gorm.DB
 
-
 func ConnectDatabase() {
 	dsn := configs.GetDSN()
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})

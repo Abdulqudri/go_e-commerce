@@ -9,23 +9,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateProduct(c *gin.Context){
+func CreateProduct(c *gin.Context) {
 	var input dtos.CreateProductDTO
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return 
+		return
 	}
 
 	product, err := services.CreateProduct(input)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
-		return 
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "product created successfully", "product": product})
-
 
 }
 
@@ -34,7 +33,7 @@ func UpdateProduct(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return 
+		return
 	}
 
 	id, _ := strconv.Atoi(c.Param("id"))
@@ -43,17 +42,17 @@ func UpdateProduct(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "error updating product"})
-		return 
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "updated succcessfully", "product":product})
+	c.JSON(http.StatusOK, gin.H{"message": "updated succcessfully", "product": product})
 }
 
 func GetProducts(c *gin.Context) {
 	products, err := services.GetProducts()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return 
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "successful", "products": products})
 }

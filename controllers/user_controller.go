@@ -14,7 +14,7 @@ func GetUser(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	user, err := services.GetUser(uint(id))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -24,7 +24,7 @@ func GetUser(c *gin.Context) {
 func GetUsers(c *gin.Context) {
 	users, err := services.GetUsers()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -40,7 +40,7 @@ func UpdateUser(c *gin.Context) {
 	user, err := services.UpdateUser(uint(id), &input)
 
 	if err != nil {	
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, user)
@@ -49,7 +49,7 @@ func UpdateUser(c *gin.Context) {
 func DeleteUser(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	if err := services.DeleteUser(uint(id)); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
