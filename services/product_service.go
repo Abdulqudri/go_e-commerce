@@ -17,6 +17,8 @@ func CreateProduct(input dtos.CreateProductDTO) (models.Product, error) {
 
 	err := database.DB.Create(&product).Error
 
+	database.DB.Preload("Category").First(&product, product.ID)
+
 	return product, err
 
 }

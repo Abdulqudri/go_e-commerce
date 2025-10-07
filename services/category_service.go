@@ -21,7 +21,7 @@ func CreateCategory(input dtos.CreateCategoryDTO) (models.Category, error) {
 func GetCategory(id uint) (*models.Category, error) {
 	var category models.Category
 
-	err := database.DB.First(&category, id).Error
+	err := database.DB.Preload("Products").First(&category, id).Error
 
 	return &category, err
 }
