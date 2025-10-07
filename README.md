@@ -168,7 +168,7 @@ type Product struct {
 
 ---
 
-## 🛠️ Example: Main Entry (cmd/main.go)
+## 🛠️ Example: Main Entry (main.go)
 
 ```go
 package main
